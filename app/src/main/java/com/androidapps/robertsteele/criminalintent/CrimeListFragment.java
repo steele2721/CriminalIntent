@@ -1,5 +1,6 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -23,24 +24,23 @@ public class CrimeListFragment extends Fragment {
         private TextView mCrimeDateTextView;
         private Crime mCrime;
 
-        private void bind(Crime crime) {
-            mCrime = crime;
-            mCrimeTitleTextView.setText(crime.getTitle());
-            mCrimeDateTextView.setText(crime.getmDate().toString());
-
-        }
-
-        @Override
-        public void onClick(View view) {
-            Toast.makeText(getActivity(), mCrime.getTitle() + " Clicked", Toast.LENGTH_SHORT)
-            .show();
-        }
-
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
             mCrimeTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mCrimeDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
             itemView.setOnClickListener(this);
+        }
+
+        private void bind(Crime crime) {
+            mCrime = crime;
+            mCrimeTitleTextView.setText(crime.getTitle());
+            mCrimeDateTextView.setText(crime.getmDate().toString());
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getmId());
+            startActivity(intent);
         }
     }
 
