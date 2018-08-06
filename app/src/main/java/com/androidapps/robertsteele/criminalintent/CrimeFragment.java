@@ -1,5 +1,6 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -21,10 +22,12 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private Button mDateButton;
 
+    private static final String ARG_CRIME_ID = "crime_id";
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        UUID crimeUUID = (UUID) getActivity().getIntent().getSerializableExtra(CrimeActivity.EXTRA_CRIME_ID);
+        UUID crimeUUID = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeUUID);
     }
 
@@ -62,6 +65,14 @@ public class CrimeFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public static CrimeFragment newInstance(UUID id) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_CRIME_ID, id);
+        CrimeFragment fragment = new CrimeFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
 
