@@ -34,7 +34,7 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.crime_fragment, container, false);
         mCrimeTitle = v.findViewById(R.id.crime_title);
-        mCrimeTitle.setText(mCrime.getTitle());
+        mCrimeTitle.setText(mCrime.getMtitle());
         mCrimeTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -43,7 +43,7 @@ public class CrimeFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mCrime.setTitle(charSequence.toString());
+                mCrime.setMtitle(charSequence.toString());
             }
 
             @Override

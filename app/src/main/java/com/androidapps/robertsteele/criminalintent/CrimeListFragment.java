@@ -33,13 +33,13 @@ public class CrimeListFragment extends Fragment {
 
         private void bind(Crime crime) {
             mCrime = crime;
-            mCrimeTitleTextView.setText(crime.getTitle());
+            mCrimeTitleTextView.setText(crime.getMtitle());
             mCrimeDateTextView.setText(crime.getmDate().toString());
         }
 
         @Override
         public void onClick(View view) {
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getmId());
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getmId());
             startActivity(intent);
         }
     }
