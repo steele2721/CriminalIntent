@@ -1,7 +1,8 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
@@ -26,6 +27,21 @@ public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE =  "dialogDate";
+
+    private final int REQUEST_DATE = -1;
+
+    @Override
+    public void onActivityResult(int resultCode, int requestCode, Intent intent) {
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if(requestCode == REQUEST_DATE) {
+            Date date = (Date) intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCrime.setmDate(date);
+            mDateButton.setText(mCrime.getmDate().toString());
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -61,8 +77,9 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
-                DatePickerFragment datePickerFragment = new DatePickerFragment();
-                datePickerFragment.show(fragmentManager, DIALOG_DATE);
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getmDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(fragmentManager, DIALOG_DATE);
             }
         });
 
