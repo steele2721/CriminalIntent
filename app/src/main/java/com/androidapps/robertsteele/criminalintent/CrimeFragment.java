@@ -1,7 +1,10 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
@@ -22,6 +26,22 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
 
     private static final String ARG_CRIME_ID = "crime_id";
+    private static final String DIALOG_DATE =  "dialogDate";
+
+    private final int REQUEST_DATE = -1;
+
+    @Override
+    public void onActivityResult(int resultCode, int requestCode, Intent intent) {
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if(requestCode == REQUEST_DATE) {
+            Date date = (Date) intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCrime.setmDate(date);
+            mDateButton.setText(mCrime.getmDate().toString());
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -53,7 +73,15 @@ public class CrimeFragment extends Fragment {
         });
         mDateButton = v.findViewById(R.id.crime_date);
         mDateButton.setText(mCrime.getmDate().toString());
-        mDateButton.setEnabled(false);
+        mDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getFragmentManager();
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getmDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(fragmentManager, DIALOG_DATE);
+            }
+        });
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.ismSolved());
