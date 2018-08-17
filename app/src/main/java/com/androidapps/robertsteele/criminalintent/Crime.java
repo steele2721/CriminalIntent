@@ -38,8 +38,11 @@ public class Crime {
         this.mSolved = mSolved;
     }
 
+    public Crime(UUID uuid){
+        mId = uuid;
+    }
     public Crime() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
         mDate = new Date();
     }
 }

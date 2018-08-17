@@ -2,9 +2,11 @@ package com.androidapps.robertsteele.criminalintent;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.androidapps.robertsteele.criminalintent.database.CrimeBaseHelper;
+import com.androidapps.robertsteele.criminalintent.database.CrimeCursorWrapper;
 import com.androidapps.robertsteele.criminalintent.database.CrimeDBSchema.CrimeTable;
 import com.androidapps.robertsteele.criminalintent.database.CrimeDBSchema.CrimeTable.Cols;
 
@@ -43,7 +45,18 @@ public class CrimeLab {
         String uuidString = crime.getmId().toString();
         ContentValues contentValues = getContentValues(crime);
         mSQLiteDatabase.update(CrimeTable.NAME, contentValues,
-                Cols.UUID + " = ? ", new String[] { uuidString });
+                Cols.UUID + " = ? ", new String[]{uuidString});
+    }
+
+    private CrimeCursorWrapper queryCrimes(String whereClause, String[] args) {
+        Cursor cursor = mSQLiteDatabase.query(CrimeTable.NAME,
+                null,
+                whereClause,
+                args,
+                null,
+                null,
+                null);
+        return new CrimeCursorWrapper(cursor);
     }
 
     private CrimeLab(Context context) {
@@ -52,10 +65,35 @@ public class CrimeLab {
     }
 
     public List<Crime> getmCrimes() {
-        return new ArrayList<Crime>();
+        List<Crime> crimes = new ArrayList<Crime>();
+
+        CrimeCursorWrapper crimeCursorWrapper = queryCrimes(null, null);
+
+        try {
+            crimeCursorWrapper.moveToFirst();
+            while (!crimeCursorWrapper.isAfterLast()) {
+                crimes.add(crimeCursorWrapper.getCrime());
+                crimeCursorWrapper.moveToNext();
+            }
+        } finally {
+            crimeCursorWrapper.close();
+        }
+        return crimes;
     }
 
     public Crime getCrime(UUID uuid) {
-        return null;
+        CrimeCursorWrapper crimeCursorWrapper =
+                queryCrimes(Cols.UUID + " = ? ", new String[]{uuid.toString()});
+        if (crimeCursorWrapper.getCount() == 0) {
+            return null;
+        } else {
+            try{
+                crimeCursorWrapper.moveToFirst();
+                return crimeCursorWrapper.getCrime();
+            }
+            finally {
+                crimeCursorWrapper.close();
+            }
+        }
     }
 }
