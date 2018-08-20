@@ -89,6 +89,11 @@ public class CrimeListFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int i, int j, Intent intent) {
+        updateUI();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
@@ -171,7 +176,5 @@ public class CrimeListFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
         updateSubtitle();
-
-
     }
 }
