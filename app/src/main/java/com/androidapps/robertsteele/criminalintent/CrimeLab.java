@@ -33,6 +33,7 @@ public class CrimeLab {
         contentValues.put(Cols.DATE, crime.getmDate().toString());
         contentValues.put(Cols.TITLE, crime.getMtitle());
         contentValues.put(Cols.SOLVED, crime.ismSolved() ? 1 : 0);
+        contentValues.put(Cols.SUSPECT, crime.getmSuspect());
         return contentValues;
     }
 
