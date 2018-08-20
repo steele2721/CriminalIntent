@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,16 +29,16 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
 
     private static final String ARG_CRIME_ID = "crime_id";
-    private static final String DIALOG_DATE =  "dialogDate";
+    private static final String DIALOG_DATE = "dialogDate";
 
     private final int REQUEST_DATE = -1;
 
     @Override
     public void onActivityResult(int resultCode, int requestCode, Intent intent) {
-        if(resultCode != Activity.RESULT_OK){
+        if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        if(requestCode == REQUEST_DATE) {
+        if (requestCode == REQUEST_DATE) {
             Date date = (Date) intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setmDate(date);
             mDateButton.setText(mCrime.getmDate().toString());
@@ -48,6 +51,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(bundle);
         UUID crimeUUID = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeUUID);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -100,6 +104,25 @@ public class CrimeFragment extends Fragment {
         CrimeLab.get(getActivity())
                 .updateCrime(mCrime);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.crime_fragment, menu);
+        menu.findItem(R.id.delete_crime).setTitle(R.string.delete_crime);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.delete_crime:
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
 
     public static CrimeFragment newInstance(UUID id) {
         Bundle bundle = new Bundle();
