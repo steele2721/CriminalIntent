@@ -41,6 +41,12 @@
         android:text="@string/choose_suspect"/>
 
     <Button
+        android:id="@+id/call_suspect_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/call_suspect"/>
+
+    <Button
         android:id="@+id/send_crime_report_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
