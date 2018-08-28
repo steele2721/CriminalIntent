@@ -54,4 +54,8 @@ public class Crime {
         this(UUID.randomUUID());
         mDate = new Date();
     }
+
+    public String getPhotoFilename() {
+        return "IMG_" + getmId().toString() + ".jpg";
+    }
 }

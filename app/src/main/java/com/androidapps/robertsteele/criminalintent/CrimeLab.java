@@ -10,6 +10,7 @@ import com.androidapps.robertsteele.criminalintent.database.CrimeCursorWrapper;
 import com.androidapps.robertsteele.criminalintent.database.CrimeDBSchema.CrimeTable;
 import com.androidapps.robertsteele.criminalintent.database.CrimeDBSchema.CrimeTable.Cols;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class CrimeLab {
 
     private static CrimeLab sCrimeLab;
-    private Context mcontext;
+    private Context mContext;
     private SQLiteDatabase mSQLiteDatabase;
 
     public static CrimeLab get(Context context) {
@@ -65,8 +66,8 @@ public class CrimeLab {
     }
 
     private CrimeLab(Context context) {
-        mcontext = context.getApplicationContext();
-        mSQLiteDatabase = new CrimeBaseHelper(mcontext).getReadableDatabase();
+        mContext = context.getApplicationContext();
+        mSQLiteDatabase = new CrimeBaseHelper(mContext).getReadableDatabase();
     }
 
     public List<Crime> getmCrimes() {
@@ -100,5 +101,10 @@ public class CrimeLab {
                 crimeCursorWrapper.close();
             }
         }
+    }
+
+    public File getPhotoFile(Crime crime) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, crime.getPhotoFilename());
     }
 }
