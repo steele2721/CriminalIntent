@@ -1,28 +1,38 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
-public class CrimeListActivity extends SingleFragmentActivity {
+public class CrimeListActivity extends SingleFragmentActivity implements CrimeListFragment.Callbacks,
+        CrimeFragment.Callbacks {
 
     @Override
     protected Fragment createFragment() {
         return new CrimeListFragment();
     }
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_fragment);
-//        FragmentManager fm = getSupportFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-//        if (fragment == null) {
-//            fragment = new CrimeFragment();
-//            fm.beginTransaction()
-//                    .add(R.id.fragment_container, fragment)
-//                    .commit();
-//        }
-//    }
+    int getLayoutResId() {
+        return R.layout.activity_masterdetail;
+    }
+
+    @Override
+    public void onCrimeSelected(Crime crime) {
+        if (findViewById(R.id.fragment_detail_container) == null) {
+            Intent intent = CrimePagerActivity.newIntent(this, crime.getmId());
+            startActivity(intent);
+        } else {
+            Fragment newDetail = CrimeFragment.newInstance(crime.getmId());
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_detail_container, newDetail)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        CrimeListFragment listFragment = (CrimeListFragment)
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        listFragment.updateUI();
+    }
 }

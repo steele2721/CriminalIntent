@@ -2,6 +2,7 @@ package com.androidapps.robertsteele.criminalintent;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -48,12 +49,29 @@ public class CrimeFragment extends Fragment {
     private ImageView mPhotoView;
     private ImageButton mPhotoButton;
     private File mPhotoFile;
+    private Callbacks mCallbacks;
+
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "dialogDate";
 
     private final int REQUEST_DATE = -1;
     private final int REQUEST_CONTACT = 1;
     private final int REQUEST_IMAGE = 2;
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -79,6 +97,7 @@ public class CrimeFragment extends Fragment {
                 cursor.moveToFirst();
                 String suspect = cursor.getString(0);
                 mCrime.setmSuspect(suspect);
+                updateCrime();
                 mChooseSuspectButton.setText(suspect);
 
                 String id = cursor.getString(1);
@@ -116,7 +135,7 @@ public class CrimeFragment extends Fragment {
 
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
+            updateCrime();
             updatePhotoView();
         }
 
@@ -145,6 +164,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 mCrime.setMtitle(charSequence.toString());
+                updateCrime();
             }
 
             @Override
@@ -170,6 +190,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 mCrime.setmSolved(b);
+                updateCrime();
             }
         });
         mSendCrimeButton = v.findViewById(R.id.send_crime_report_button);
@@ -239,6 +260,11 @@ public class CrimeFragment extends Fragment {
         super.onPause();
         CrimeLab.get(getActivity())
                 .updateCrime(mCrime);
+    }
+
+    private void updateCrime() {
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 
     public String createCrimeReport() {

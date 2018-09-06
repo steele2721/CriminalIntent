@@ -1,5 +1,6 @@
 package com.androidapps.robertsteele.criminalintent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,13 +24,20 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private boolean mSubtitleVisible;
+    private Callbacks mCallbacks;
+
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+
+    }
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mCrimeTitleTextView;
         private TextView mCrimeDateTextView;
         private Crime mCrime;
+
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
@@ -46,9 +54,20 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getmId());
-            startActivity(intent);
+            mCallbacks.onCrimeSelected(mCrime);
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
@@ -98,7 +117,7 @@ public class CrimeListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
@@ -118,10 +137,9 @@ public class CrimeListFragment extends Fragment {
         inflater.inflate(R.menu.fragment_crime_list, menu);
 
         MenuItem menuItem = menu.findItem(R.id.show_subtitle);
-        if(mSubtitleVisible) {
+        if (mSubtitleVisible) {
             menuItem.setTitle(R.string.show_subtitle);
-        }
-        else {
+        } else {
             menuItem.setTitle(R.string.hide_subtitle);
         }
     }
@@ -132,8 +150,8 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getmId());
-                startActivity(intent);
+                updateUI();
+                mCallbacks.onCrimeSelected(crime);
                 return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -156,7 +174,7 @@ public class CrimeListFragment extends Fragment {
         int count = CrimeLab.get(getActivity()).getmCrimes().size();
         String message = getString(R.string.subtitle_format, count);
 
-        if(!mSubtitleVisible){
+        if (!mSubtitleVisible) {
             message = null;
         }
 
@@ -164,7 +182,7 @@ public class CrimeListFragment extends Fragment {
         appCompatActivity.getSupportActionBar().setSubtitle(message);
     }
 
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getmCrimes();
 
